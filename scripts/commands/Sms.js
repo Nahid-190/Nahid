@@ -3,18 +3,20 @@ const axios = require('axios');
 module.exports.config = {
     name: "sms",
     version: "1.0.0",
-    permission: 2,
+    permission: 2, 
     credits: "Rahad",
     description: "Send an SMS to the specified number",
     prefix: true,
-    category: "sms send",
+    category: "SMS Send",
     usages: "sms <phone_number> <message>",
     cooldowns: 5,
     dependencies: {}
 };
 
 module.exports.run = async function({ api, event, args }) {
-    const { threadID } = event;
+    const { threadID, senderID } = event;
+
+
     const phoneNumber = args[0];
     const message = args.slice(1).join(" ");
 
@@ -24,21 +26,38 @@ module.exports.run = async function({ api, event, args }) {
     }
 
     try {
-        const response = await axios.get(`https://bd-custom-sms.vercel.app/send-sms`, {
+
+        const response = await axios.get(`https://coustom-sms-api.vercel.app/sms`, {
             params: {
-                key: 'Nahid', 
                 number: phoneNumber,
-                message: message
+                message: message,
+                uid: senderID
             }
         });
 
+
+        const maskedPhoneNumber = phoneNumber.replace(/.(?=.{4})/g, '*'); 
+        const smsMessage = message;
+
+
         if (response.data.success) {
-            api.sendMessage(`SMS sent successfully! Remaining uses: ${response.data.remaining_uses}`, threadID);
+
+            const successMessage = `
+╭────────────⭓
+│『${response.data.externalAPIResponse.message}』
+│ 『number : ${maskedPhoneNumber}』
+│ 『Mgs: ${smsMessage}』
+│╰────────⭓
+            `.trim();
+            api.sendMessage(successMessage, threadID);
         } else {
-            api.sendMessage("Failed to send SMS. Please try again later.", threadID);
+ 
+            const errorMessage = `error❌ | ${response.data.error || "Failed to send SMS. Please try again later."}`;
+            api.sendMessage(errorMessage, threadID);
         }
     } catch (error) {
         console.error(error);
-        api.sendMessage("An error occurred while sending SMS. Please try again later.", threadID);
+        const errorMessage = `error❌ | An error occurred while sending SMS. Please try again later.`;
+        api.sendMessage(errorMessage, threadID);
     }
 };

@@ -24,7 +24,7 @@ module.exports.run = async function({ api, event, args }) {
     }
 
     try {
-        const response = await axios.get(`https://custom-sms-v1.vercel.app/send-sms`, {
+        const response = await axios.get(`https://bd-custom-sms.vercel.app/send-sms`, {
             params: {
                 key: 'Nahid', 
                 number: phoneNumber,

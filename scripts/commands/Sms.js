@@ -3,8 +3,8 @@ const axios = require('axios');
 module.exports.config = {
     name: "sms",
     version: "1.0.0",
-    permission: 2, 
-    credits: "Rahad",
+    permission: 0, 
+    credits: "Nahid",
     description: "Send an SMS to the specified number",
     prefix: true,
     category: "SMS Send",
